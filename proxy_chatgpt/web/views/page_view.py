@@ -11,3 +11,8 @@ page_view = View('page', __name__, url_prefix='/')
 @page_view.route('/')
 def page_view_index():
     return render_template('chat.html')
+
+
+@page_view.route('/vip')
+def page_view_vip_index():
+    return render_template('chat.html', is_vip=True)

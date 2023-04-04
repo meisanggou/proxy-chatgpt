@@ -37,16 +37,6 @@ function sendMessage(message, itsMe) { // ...Mario
     messageList.scrollTop = messageList.scrollHeight;
 }
 
-function reqReply(msg){
-  var data = {'message': msg};
-  my_async_request('/chat/completions', 'POST', data, function(res){
-    var r_data = res.data;
-    for(var index in r_data.responses){
-      sendMessage(r_data.responses[index], true);
-    }
-  })
-}
-
 var message = document.getElementById("message-input");
 
 message.addEventListener("keypress", function(event) {
@@ -61,5 +51,5 @@ message.addEventListener("keypress", function(event) {
 });
 
 $(document).ready(function() {
-  reqReply("");
+  sendMessage('Hello!', true);
 });

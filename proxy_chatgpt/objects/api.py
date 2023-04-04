@@ -14,12 +14,18 @@ class ChatGPTAPI(object):
 
     def __init__(self):
         openai.api_key = os.getenv("OPENAI_API_KEY")
-        openai.proxy = "http://127.0.0.1:1080"
+        proxy = os.getenv('OPENAI_PROXY')
+        if proxy:
+            openai.proxy = proxy
 
     def create(self, message):
+        _msg = {'role': 'user', 'content': message}
+        return self.create2(_msg)
+
+    def create2(self, messages):
         response = openai.ChatCompletion.create(
           model="gpt-3.5-turbo",
-          messages=[{'role': 'user', 'content': message}],
+          messages=messages,
           temperature=0.9,
           max_tokens=500,
           top_p=1,

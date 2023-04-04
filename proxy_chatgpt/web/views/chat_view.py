@@ -21,7 +21,19 @@ def start_chat():
         message = "Hello!"
     else:
         res = chat_api.create(message)
-        print(res)
+        message = res['choices'][0]['message']['content']
+    reply_data = {'responses': [message]}
+    return {'status': True, 'data': reply_data}
+
+
+@chat_view.route('/vip/completions', methods=['POST'])
+def start_vip_chat():
+    data = request.json
+    messages = data['messages']
+    if not messages:
+        message = "Hello VIP!"
+    else:
+        res = chat_api.create2(messages)
         message = res['choices'][0]['message']['content']
     reply_data = {'responses': [message]}
     return {'status': True, 'data': reply_data}

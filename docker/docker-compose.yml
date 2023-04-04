@@ -1,0 +1,11 @@
+services:
+  proxy-chatgpt:
+    container_name: proxy-chatgpt
+    environment:
+     - OPENAI_API_KEY=$OPENAI_API_KEY
+    network_mode: host
+    image: proxy-chatgpt
+    restart: always
+    volumes:
+    - /root/zhouheng/proxy-chatgpt:/opt/proxy-chatgpt
+version: '2.4'
