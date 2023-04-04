@@ -20,7 +20,7 @@ class ChatGPTAPI(object):
 
     def create(self, message):
         _msg = {'role': 'user', 'content': message}
-        return self.create2(_msg)
+        return self.create2([_msg])
 
     def create2(self, messages):
         response = openai.ChatCompletion.create(
