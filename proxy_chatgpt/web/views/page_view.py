@@ -13,6 +13,11 @@ def page_view_index():
     return render_template('chat.html')
 
 
+@page_view.route('/login')
+def page_login():
+    return render_template('login.html')
+
+
 @page_view.route('/vip')
 def page_view_vip_index():
     return render_template('chat.html', is_vip=True)
