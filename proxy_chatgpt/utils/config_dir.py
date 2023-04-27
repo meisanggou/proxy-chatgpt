@@ -2,7 +2,7 @@
 # coding: utf-8
 import os
 
-from dms.utils.singleton import Singleton
+from proxy_chatgpt.utils.singleton import Singleton
 
 
 class ConfigDir(Singleton):
