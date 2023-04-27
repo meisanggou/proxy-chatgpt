@@ -10,4 +10,17 @@ services:
     volumes:
     - /root/zhouheng/proxy-chatgpt:/opt/proxy-chatgpt
     - /root/zhouheng/log:/var/log/proxy-chatgpt
+    - /root/zhouheng/config:/etc/proxy-chatgpt
+  pc-mysql:
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    container_name: pc-mysql
+    environment:
+    - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+    - MYSQL_DATABASE=pchat
+    image: mysql:5.7
+    ports:
+    - 9536:3306
+    restart: always
+    volumes:
+    - pc-mysql:/var/lib/mysql
 version: '2.3'
