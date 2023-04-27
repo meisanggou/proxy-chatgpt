@@ -23,4 +23,7 @@ services:
     restart: always
     volumes:
     - pc-mysql:/var/lib/mysql
+volumes:
+  pc-mysql:
+    name: pc-mysql
 version: '2.3'
