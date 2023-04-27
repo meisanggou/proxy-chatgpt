@@ -1,3 +1,4 @@
 openai
 flask-helper
 flask-login
+mysqldb-rich

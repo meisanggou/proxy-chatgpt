@@ -3,7 +3,7 @@ from centos
 RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
     yum install -y python39 && \
-    pip3 install openai gevent gunicorn flask-helper flask-login eventlet
+    pip3 install openai gevent gunicorn flask-helper flask-login eventlet mysqldb-rich
 
 ENV CODEPATH /opt/proxy-chatgpt
 ENV PYTHONPATH $CODEPATH
