@@ -3,7 +3,6 @@
 
 import base64
 import hashlib
-import os
 import re
 import time
 from werkzeug.security import check_password_hash
@@ -22,6 +21,8 @@ class UserObject(DBObject):
 
     """
     _salt_password = "msg_zh2023"
+    DEFAULT_USER_ROLE = 1
+    DEFAULT_PASSWORD = '12345678'
 
     @staticmethod
     def _md5_hash(s):
@@ -79,6 +80,8 @@ class UserObject(DBObject):
             if isinstance(nick_name, str):
                 nick_name = nick_name.encode("utf-8")
             nick_name = base64.b64encode(nick_name)
+        if not role:
+            role = self.DEFAULT_USER_ROLE
         kwargs = dict(user_name=user_name, password=password, tel=tel,
                       nick_name=nick_name, email=email, wx_id=wx_id,
                       creator=creator, add_time=add_time, role=role)

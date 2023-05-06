@@ -4,17 +4,16 @@ from flask import g
 from flask import request
 import json
 
-from flask_helper.view import View
-
 from proxy_chatgpt.objects.api import ChatGPTAPI
 from proxy_chatgpt.utils.log import getLogger
+from proxy_chatgpt.web.view import View2
 
 
 __author__ = 'zhouhenglc'
 
 LOG = getLogger()
 
-chat_view = View('chat', __name__, url_prefix='/chat')
+chat_view = View2('chat', __name__, url_prefix='/chat', auth_required=True)
 chat_api = ChatGPTAPI()
 
 
@@ -29,7 +28,7 @@ def start_chat():
         res = chat_api.create(message)
         usage = res['usage']
         usage['ip'] = g.remote_addr
-        LOG.info('[usage] %s [usage]', json.dumps(usage))
+        LOG.info('[%s][usage] %s [usage]', g.user_no, json.dumps(usage))
         message = res['choices'][0]['message']['content']
     reply_data = {'responses': [message]}
     return {'status': True, 'data': reply_data}
@@ -45,7 +44,7 @@ def start_vip_chat():
         res = chat_api.create2(messages)
         usage = res['usage']
         usage['ip'] = g.remote_addr
-        LOG.info('[usage] %s [usage]', json.dumps(usage))
+        LOG.info('[%s][usage] %s [usage]', g.user_no, json.dumps(usage))
         message = res['choices'][0]['message']['content']
     reply_data = {'responses': [message]}
     return {'status': True, 'data': reply_data}

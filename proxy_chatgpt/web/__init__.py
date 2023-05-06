@@ -28,15 +28,16 @@ class User(UserMixin):
 def load_user(user_name):
     user = User()
     user.user_name = user_name
-    # if "role" not in session:
-    #     session["role"] = 0
-    # user.role = session["role"]
+    if "role" not in session:
+        session["role"] = 0
+    user.role = session["role"]
     return user
 
 
 def get_app():
     app = Flask2(__name__, log=LOG)
     app.secret_key = 'Proxy-ChatGPT0427'
+
     login_manager.init_app(app)
     app.real_ip()
     env = app.jinja_env
