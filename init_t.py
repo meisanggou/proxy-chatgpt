@@ -14,7 +14,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         root_password = sys.argv[1]
     else:
-        root_password = "lcYH223&*"
+        root_password = os.getenv("MYSQL_ROOT_PASSWORD")  # "lcYH223&*"
     db_conf_path = MysqlConfig().config_path
     db = DB(conf_path=db_conf_path, user="root", password=root_password)
     if root_password:
