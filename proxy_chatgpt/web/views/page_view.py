@@ -57,8 +57,6 @@ def password_page():
 @page_view.route("/register", methods=["GET"])
 @login_required
 def register_page():
-    # if g.user_role & control.role_value["user_new"] <= 0:
-    #     return u"用户无权限操作"
     check_url = "/user/register/check"
 
     return render_template("register.html", url_prefix='/user',

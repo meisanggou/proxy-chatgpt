@@ -1,7 +1,6 @@
 # !/usr/bin/env python
 # coding: utf-8
-from datetime import datetime
-from datetime import timedelta
+from flask import g
 from flask import redirect
 from flask import request
 from flask import session
@@ -99,6 +98,8 @@ def set_password():
 
 @user_view.route("/register", methods=["POST"])
 def register():
+    if not user_m.is_manager(g.user_role):
+        return '无权限操作'
     request_data = request.form
     user_name = request_data['user_name']
     if len(user_name) < 5:
