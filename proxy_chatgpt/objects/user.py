@@ -82,6 +82,8 @@ class UserObject(DBObject):
             nick_name = base64.b64encode(nick_name)
         if not role:
             role = self.DEFAULT_USER_ROLE
+        if not password:
+            password = self.DEFAULT_PASSWORD
         kwargs = dict(user_name=user_name, password=password, tel=tel,
                       nick_name=nick_name, email=email, wx_id=wx_id,
                       creator=creator, add_time=add_time, role=role)

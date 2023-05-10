@@ -106,7 +106,7 @@ def register():
         return "账户名长度过短"
     nick_name = request_data['nick_name']
     user_role = request_data.get('user_role', None)
-    result, message = user_m.new_user(user_name, "dms", nick_name,
+    result, message = user_m.new_user(user_name, None, nick_name,
                                       current_user.user_name, user_role)
     if result is False:
         return message
