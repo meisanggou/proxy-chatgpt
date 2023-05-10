@@ -1,10 +1,13 @@
 # !/usr/bin/env python
 # coding: utf-8
 from datetime import datetime
+from datetime import timedelta
 from flask import redirect
 from flask import request
 from flask import session
 from flask import url_for
+import time
+from werkzeug.security import gen_salt
 
 from flask_helper.view import View
 from flask_login import current_user
@@ -32,7 +35,16 @@ def user_login():
         return {"status": False, "data": "账号不存在"}
     elif r_code == -1:
         return {"status": False, "data": "密码不正确"}
+    elif r_code == 0 and info.get('is_default_password'):
+        # password is default password
+        session["user_name"] = info["user_name"]
+        session["change_token"] = gen_salt(57)
+        session["expires_in"] = time.time() + 300
+        session['password'] = password
+        return {"status": True, "data": {"location": "/password",
+                                         "user_name": info["user_name"]}}
     session["role"] = info["role"]
+    session['user_no'] = info['user_no']
 
     user = User()
     user.user_name = info["user_name"]
@@ -53,6 +65,8 @@ def set_password():
     confirm_password = request.form["confirm_password"]
     if new_password != confirm_password:
         return "两次输入密码不一致"
+    if not user_m.password_is_strong(new_password):
+        return '密码强度不符合要求！'
     if current_user.is_authenticated:
         old_password= request.form["old_password"]
         if old_password == new_password:
@@ -61,9 +75,10 @@ def set_password():
         if result is False:
             return "旧密码不正确"
         return redirect(url_for("page.page_login"))
-    elif "change_token" in session and "expires_in" in session and "user_name" in session and "password" in session:
+    elif "change_token" in session and "expires_in" in session \
+            and "user_name" in session and "password" in session:
         expires_in = session["expires_in"]
-        if expires_in > datetime.now():
+        if expires_in > time.time():
             change_token = request.form["change_token"]
             if change_token != session["change_token"]:
                 return "Bad change_token"

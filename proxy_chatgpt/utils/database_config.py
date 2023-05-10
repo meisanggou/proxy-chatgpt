@@ -51,7 +51,7 @@ class MysqlConfig(Singleton):
                 self.read_password = config.get(read_user_section, "password")
 
     def to_dict(self, read_only=False):
-        o = dict(host=self.host)
+        o = dict(host=self.host, db_name=self.db_name)
         if self.port:
             o["port"] = self.port
         if self.charset:
@@ -67,6 +67,15 @@ class MysqlConfig(Singleton):
             if self.password:
                 o["password"] = self.password
         return o
+
+    def to_db_dict(self, read_only=False):
+        _d = self.to_dict(read_only)
+        _nd = {}
+        for k, v in _d.items():
+            if not k.startswith('db_'):
+                _nd['db_%s' % k] = v
+            _nd[k] = v
+        return _nd
 
 
 if __name__ == "__main__":

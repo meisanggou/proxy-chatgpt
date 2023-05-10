@@ -1,13 +1,16 @@
 # !/usr/bin/env python
 # coding: utf-8
-from datetime import datetime
+import time
+
 from flask import g
 from flask import redirect
 from flask import render_template
 from flask import session
 from flask import url_for
 from flask_helper.view import View
+from flask_login import current_user
 from flask_login import login_required
+from flask_login import logout_user
 from proxy_chatgpt.web import login_manager
 
 
@@ -26,6 +29,8 @@ def page_view_index():
 
 @page_view.route('/login')
 def page_login():
+    if current_user.is_authenticated is True:
+        logout_user()
     return render_template('login.html')
 
 
@@ -38,13 +43,14 @@ def page_view_vip_index():
 @page_view.route("/password", methods=["GET"])
 def password_page():
     _prefix = '/user'
-    if "user_name" in g:
+    if "user_name" in g and g.user_name:
         return render_template("password.html", url_prefix=_prefix)
     elif "change_token" in session and "expires_in" in session and "user_name" in session:
+        print(session["expires_in"])
         expires_in = session["expires_in"]
-        if expires_in > datetime.now():
+        if expires_in > time.time():
             return render_template("password.html", user_name=session["user_name"],
-                                   change_token=session["change_token"], url_prefix=url_prefix)
+                                   change_token=session["change_token"], url_prefix=_prefix)
     return redirect(url_for(login_manager.login_view))
 
 

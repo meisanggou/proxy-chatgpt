@@ -190,6 +190,8 @@ class UserObject(DBObject):
         if self._password_check(password, db_password, account) is False:
             return -1, None
         del user_item["password"]
+        if password == self.DEFAULT_PASSWORD:
+            user_item['is_default_password'] = True
         return 0, user_item
 
     def update_info(self, user_no, **kwargs):
@@ -212,6 +214,13 @@ class UserObject(DBObject):
         if len(items) <= 0:
             return None
         return items[0]['role']
+
+    def password_is_strong(self, password):
+        if password == self.DEFAULT_PASSWORD:
+            return False
+        if len(password) < 5:
+            return False
+        return True
 
 
 if __name__ == "__main__":

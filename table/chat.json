@@ -29,10 +29,15 @@
                 "col_type": "varchar(40)"
             },
             {
-                "col_comment": "流水标记",
-                "col_name": "1代表记录成功 2代表 4代表 8代表。可叠加",
+                "col_comment": "流水标记 1代表记录成功 2代表 4代表 8代表。可叠加",
+                "col_name": "tags",
                 "col_type": "int(11)",
                 "default_value": 1
+            },
+            {
+                "col_comment": "更新时间",
+                "col_name": "update_time",
+                "col_type": "int(11)"
             }
         ],
         "table_comment": "chat流水账",

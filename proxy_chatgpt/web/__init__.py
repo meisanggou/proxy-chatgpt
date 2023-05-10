@@ -30,7 +30,10 @@ def load_user(user_name):
     user.user_name = user_name
     if "role" not in session:
         session["role"] = 0
+    if 'user_no' not in session:
+        session['user_no'] = -1
     user.role = session["role"]
+    user.user_no = session['user_no']
     return user
 
 
