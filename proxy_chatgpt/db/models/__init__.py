@@ -16,7 +16,7 @@ class _Base(object):
         return lower_name + 's'
 
     def save(self, session):
-        with session.begin(subtransactions=True):
+        with session.begin():
             session.add(self)
             session.flush()
 
