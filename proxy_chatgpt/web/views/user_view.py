@@ -13,13 +13,17 @@ from flask_login import current_user
 from flask_login import login_user
 
 from proxy_chatgpt.objects.user import UserObject
+from proxy_chatgpt.objects.user import SysUser
 from proxy_chatgpt.web import User
+from proxy_chatgpt.web.view import View2
+
 
 __author__ = 'zhouhenglc'
 
 
-user_view = View('user', __name__, url_prefix='/user')
+user_view = View2('user', __name__, url_prefix='/user')
 user_m = UserObject()
+obj_sys_user = SysUser()
 
 
 @user_view.route('/login', methods=['POST'])
@@ -27,7 +31,8 @@ def user_login():
     request_data = request.json
     user_name = request_data["user_name"]
     password = request_data["password"]
-    r_code, info = user_m.user_confirm(password, user=user_name)
+    r_code, info = obj_sys_user.user_confirm(g.session, password,
+                                             user=user_name)
     if r_code == -3:
         return {"status": False, "data": "内部错误"}
     elif r_code == -2:
@@ -64,7 +69,7 @@ def set_password():
     confirm_password = request.form["confirm_password"]
     if new_password != confirm_password:
         return "两次输入密码不一致"
-    if not user_m.password_is_strong(new_password):
+    if not obj_sys_user.password_is_strong(new_password):
         return '密码强度不符合要求！'
     if current_user.is_authenticated:
         old_password= request.form["old_password"]

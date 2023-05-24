@@ -8,6 +8,8 @@ import time
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
+from proxy_chatgpt.db.models import user as user_model
+from proxy_chatgpt.objects import base
 from proxy_chatgpt.objects.base import DBObject
 
 
@@ -216,6 +218,86 @@ class UserObject(DBObject):
         if len(items) <= 0:
             return None
         return items[0]['role']
+
+
+class SysUser(base.BaseObject):
+    model = user_model.SysUserModel
+    _salt_password = "msg_zh2023"
+    DEFAULT_USER_ROLE = 1
+    DEFAULT_PASSWORD = '12345678'
+
+    @classmethod
+    def _md5_hash(cls, s):
+        m = hashlib.md5()
+        if isinstance(s, str) is True:
+            s = s.encode("utf-8")
+        m.update(s)
+        return m.hexdigest()
+
+    @classmethod
+    def _md5_hash_password(cls, user_name, password):
+        md5_password = cls._md5_hash(user_name + password + user_name)
+        return (md5_password + cls._salt_password).upper()
+
+    @classmethod
+    def _password_check(cls, password, db_password, user_name):
+        if db_password is None:
+            return False  # 密码为空 无限期禁止登录
+        if len(password) <= 20:
+            _md5_p = cls._md5_hash_password(user_name, password)
+            if check_password_hash(db_password, _md5_p) is True:
+                return True
+        return False
+
+    # 验证auth是否存在 包括 account tel alias wx_id
+    def _verify_user_exist(self, session, **kwargs):
+        need_password = kwargs.pop('need_password')
+        items = []
+        for u_item in self.get_all(session, **kwargs):
+            item = u_item.to_dict()
+            try:
+                item["nick_name"] = base64.b64decode(item["nick_name"])
+            except Exception as e:
+                print(e)
+            if not need_password:
+                del item['password']
+            items.append(item)
+        return items
+
+    def user_confirm(self, session, password, user_no=None, user_name=None,
+                     email=None, tel=None, user=None):
+        if user_no is not None:
+            where_value = dict(user_no=user_no)
+        elif user_name is not None:
+            where_value = dict(user_name=user_name)
+        elif email is not None:
+            where_value = {"email": email}
+        elif tel is not None:
+            where_value = {"tel": tel}
+        elif user is not None:
+            if re.match(r"\d{1,10}$", user) is not None:
+                where_value = dict(user_no=user)
+            elif re.match(r"1\d{10}$", user) is not None:
+                where_value = {"tel": user}
+            elif re.match(r"\S+@\s+$", user) is not None:
+                where_value = dict(email=user)
+            else:
+                where_value = dict(user_name=user)
+        else:
+            return -3, None
+        where_value["need_password"] = True
+        db_items = self._verify_user_exist(session, **where_value)
+        if len(db_items) <= 0:
+            return -2, None
+        user_item = db_items[0]
+        account = user_item["user_name"]
+        db_password = user_item["password"]
+        if self._password_check(password, db_password, account) is False:
+            return -1, None
+        del user_item["password"]
+        if password == self.DEFAULT_PASSWORD:
+            user_item['is_default_password'] = True
+        return 0, user_item
 
     def password_is_strong(self, password):
         if password == self.DEFAULT_PASSWORD:
